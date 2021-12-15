@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+using namespace std;
 const int BOMBS_COUNT = 10;
 const int GRID_BORDERSIZE = 9;
 int NearbyBombCount(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int coordinateX, int coordinateY)
@@ -33,7 +34,7 @@ void GenerateBombs(int bombCoordinates[BOMBS_COUNT],int grid[GRID_BORDERSIZE][GR
     for (int i = 0;i < BOMBS_COUNT;i++)
     {           
             int isUnique = true;
-            currentCoordinates = rand() % 100;
+            currentCoordinates = rand() % 90;
             for (int j = 0;j < i;j++)
             {             
                 if (bombCoordinates[j] == currentCoordinates)
@@ -67,6 +68,19 @@ void GenerateGrid(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int bombCoordinate
         }
     }
 }
+void DisplayGrid(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int grid2[GRID_BORDERSIZE][GRID_BORDERSIZE])
+{
+    for (int i = 0;i < +10;i++)
+    {
+        for (int j = 0;j < +10;j++)
+        {
+            if (grid2[i][j] == 0)
+                cout << "*";
+            else cout << grid2[i][j];
+        }
+        cout <<"|"<<endl<< "_ _ _ _ _ _ _ _ _ _ ";
+    }
+}
 void Reveal(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
 {
     //TODO
@@ -76,8 +90,16 @@ void Mark(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
     //TODO
 }
 int main()
-{
+{  
     int  grid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
+    int elementConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
+    for (int i = 0;i < +10;i++)
+    {
+        for (int j = 0;j < +10;j++)
+        {
+            elementConditionCheckGrid[i][j] = 0;
+        }
+    }
     int bombCoordinates[BOMBS_COUNT] = {};
     GenerateBombs(bombCoordinates,grid);
 }
