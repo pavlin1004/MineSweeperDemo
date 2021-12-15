@@ -3,6 +3,10 @@
 using namespace std;
 const int BOMBS_COUNT = 10;
 const int GRID_BORDERSIZE = 9;
+void RevealNearZero(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
+{
+
+}
 int NearbyBombCount(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int coordinateX, int coordinateY)
 {
     int elementValue = 0;
@@ -68,22 +72,37 @@ void GenerateGrid(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int bombCoordinate
         }
     }
 }
-void DisplayGrid(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int grid2[GRID_BORDERSIZE][GRID_BORDERSIZE])
+void DisplayGrid(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE], int condition[GRID_BORDERSIZE][GRID_BORDERSIZE])
 {
     for (int i = 0;i < +10;i++)
     {
         for (int j = 0;j < +10;j++)
         {
-            if (grid2[i][j] == 0)
+            if (condition[i][j] == 0)
                 cout << "*";
-            else cout << grid2[i][j];
+            else cout << condition[i][j];
         }
-        cout <<"|"<<endl<< "_ _ _ _ _ _ _ _ _ _ ";
+        cout <<"|"<<endl<< "_________";
     }
 }
-void Reveal(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
+int Reveal(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE],int coordinateX,int coordinateY, int bombCoordinates[BOMBS_COUNT],int elementConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE])
 {
-    //TODO
+    for (int i = 0;i <= BOMBS_COUNT;i++)
+    {
+        if (bombCoordinates[i] / 10 == coordinateX && bombCoordinates[i] % 10 == coordinateY)
+        {
+            return 0;
+        }
+    }
+    if (elementConditionCheckGrid[coordinateX][coordinateY] == 0)
+    {
+        elementConditionCheckGrid[coordinateX][coordinateY] == 1;
+    }
+    else
+    {
+        cout << "You have already revealed this position";
+    }
+    return 1;
 }
 void Mark(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
 {
@@ -91,8 +110,10 @@ void Mark(int grid[GRID_BORDERSIZE][GRID_BORDERSIZE])
 }
 int main()
 {  
+    
     int  grid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
     int elementConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
+    bool firstReveal = false;
     for (int i = 0;i < +10;i++)
     {
         for (int j = 0;j < +10;j++)
