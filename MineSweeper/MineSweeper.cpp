@@ -1,9 +1,10 @@
 #include <iostream>
 #include <stdlib.h>
+#include <random>
 using namespace std;
 const int BOMBS_COUNT = 10;
-const int GRID_BORDERSIZE = 8;
-void RevealNearZero(int elementscondition[][GRID_BORDERSIZE],int grid[][GRID_BORDERSIZE],int xCoordinate,int yCoordinate)
+const int GRID_BORDERSIZE = 9;
+void RevealNearZero(int elementscondition[][GRID_BORDERSIZE], int grid[][GRID_BORDERSIZE], int xCoordinate, int yCoordinate)
 {
     if (grid[xCoordinate][yCoordinate] == 0)
     {
@@ -11,10 +12,13 @@ void RevealNearZero(int elementscondition[][GRID_BORDERSIZE],int grid[][GRID_BOR
         {
             for (int j = yCoordinate - 1;j <= yCoordinate + 1;j++)
             {
-                if (i >= 0 && j >= 0 && i <= GRID_BORDERSIZE && j <= GRID_BORDERSIZE)
-                {                  
-                    RevealNearZero(elementscondition,grid, i, j);
+                if (i >= 0 && j >= 0 && i <= 8 && j <= 8)
+                {
                     elementscondition[i][j] = 1;
+                    if (grid[i][j] == 0 && (i != xCoordinate && j != yCoordinate))
+                    {
+                        RevealNearZero(elementscondition, grid, i, j);
+                    }
                 }
             }
         }
@@ -45,74 +49,73 @@ int NearbyBombCount(int grid[][GRID_BORDERSIZE], int coordinateX, int coordinate
     }
     return elementValue;
 }
-void GenerateBombs(int bombCoordinates[10],int grid[][GRID_BORDERSIZE],int firstXCoordinate,int firstYcoordinate)
+void GenerateBombs(int bombCoordinates[10], int grid[][GRID_BORDERSIZE], int firstXCoordinate, int firstYcoordinate)
 {
-    int currentXCoordinate,currentYCoordinate;  
+    int currentXCoordinate, currentYCoordinate;
     for (int i = 0;i < BOMBS_COUNT;i++)
-    {           
-            int isUnique = true;
-            currentXCoordinate = rand() % 9;
-            currentYCoordinate = rand() % 9;
-            for (int j = 0;j < i;j++)
-            {             
-                if (bombCoordinates[j]/10 == currentXCoordinate&&bombCoordinates[j]%10==currentYCoordinate)
+    {
+        int isUnique = true;
+        srand((unsigned)time(0));
+        currentXCoordinate = rand() % 9;
+        currentYCoordinate = rand() % 9;
+        for (int j = 0;j < i;j++)
+        {
+            if (bombCoordinates[j] / 10 == currentXCoordinate && bombCoordinates[j] % 10 == currentYCoordinate)
+            {
+                isUnique = false;
+                break;
+            }
+            else
+            {
+                for (int i = firstXCoordinate - 1;i <= firstXCoordinate + 1;i++)
                 {
-                    isUnique = false;
-                    break;
-                }
-                else
-                {
-                    for (int i = firstXCoordinate - 1;i <= firstXCoordinate + 1;i++)
+                    for (int j = firstYcoordinate - 1;j <= firstYcoordinate + 1;j++)
                     {
-                        for (int j = firstYcoordinate -1 ;j <= firstYcoordinate + 1;j++)
+                        if (i >= 0 && j >= 0 && i <= GRID_BORDERSIZE && j <= GRID_BORDERSIZE)
                         {
-                            if (i >= 0 && j >= 0 && i <= GRID_BORDERSIZE && j <= GRID_BORDERSIZE)
+                            if (bombCoordinates[j] / 10 == i && bombCoordinates[j] % 10 == j)
                             {
-                                if (bombCoordinates[j] / 10 == i && bombCoordinates[j] % 10 == j)
-                                {
-                                    isUnique = false;
-                                    break;
-                                }
+                                isUnique = false;
+                                break;
                             }
                         }
                     }
                 }
             }
-            if (isUnique)
-            {
-                bombCoordinates[i] = currentXCoordinate*10+currentYCoordinate;
-            }
-            else i--;
-    }
-    for (int i = 0;i < BOMBS_COUNT;i++)
-    {
-        grid[bombCoordinates[i] / 10][bombCoordinates[i] % 10] = -1;
+        }
+        if (isUnique)
+        {
+            bombCoordinates[i] = currentXCoordinate * 10 + currentYCoordinate;
+            grid[currentXCoordinate][currentYCoordinate] = -1;
+        }
+        else i--;
     }
 }
-void GenerateGrid(int grid[][GRID_BORDERSIZE], int bombCoordinates[10],int firstXCoordinate,int firstYcoordinate,int elementsCondition[][GRID_BORDERSIZE])
+void GenerateGrid(int grid[][GRID_BORDERSIZE], int bombCoordinates[10], int firstXCoordinate, int firstYcoordinate, int elementsCondition[][GRID_BORDERSIZE])
 {
     grid[firstXCoordinate][firstYcoordinate] = 0;
     elementsCondition[firstXCoordinate][firstYcoordinate] = 1;
-    GenerateBombs(bombCoordinates,grid,firstXCoordinate,firstYcoordinate);
+    GenerateBombs(bombCoordinates, grid, firstXCoordinate, firstYcoordinate);
     for (int i = 0;i <= GRID_BORDERSIZE;i++)
     {
         for (int j = 0;j <= GRID_BORDERSIZE;j++)
-        {         
-                grid[i][j] = NearbyBombCount(grid, i, j);           
+        {
+            grid[i][j] = NearbyBombCount(grid, i, j);
         }
     }
+    //RevealNearZero(elementsCondition, grid, firstXCoordinate, firstYcoordinate);
 }
 void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsCondition[][GRID_BORDERSIZE])
 {
-    for (int i = 0;i <9;i++)
-    { 
-        for (int j = 0;j <9;j++)
+    for (int i = 0;i < 9;i++)
+    {
+        for (int j = 0;j < 9;j++)
         {
             if (elementsCondition[i][j] == 0)
                 cout << "X   ";
             else if (elementsCondition[i][j] == -1)
             {
-                cout << "M   ";
+                cout << "B   ";
             }
             else
             {
@@ -120,14 +123,14 @@ void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsCondition[][GRID_BORDE
             }
         }
         cout << endl;
-    } 
+    }
 }
-void Reveal(int grid[][GRID_BORDERSIZE],int coordinateX,int coordinateY, int bombCoordinates[10],int elementConditionCheckGrid[][GRID_BORDERSIZE])
+void Reveal(int grid[][GRID_BORDERSIZE], int coordinateX, int coordinateY, int bombCoordinates[10], int elementConditionCheckGrid[][GRID_BORDERSIZE])
 {
     if (elementConditionCheckGrid[coordinateX][coordinateY] == 0)
     {
         elementConditionCheckGrid[coordinateX][coordinateY] = 1;
-        RevealNearZero(elementConditionCheckGrid,grid,coordinateX,coordinateY);
+        //RevealNearZero(elementConditionCheckGrid, grid, coordinateX, coordinateY);
     }
     else
     {
@@ -135,13 +138,13 @@ void Reveal(int grid[][GRID_BORDERSIZE],int coordinateX,int coordinateY, int bom
     }
 
 }
-void Mark(int grid[][GRID_BORDERSIZE],int coordinateX,int coordinateY)
+void Mark(int elementConditionCheckGrid[][GRID_BORDERSIZE], int coordinateX, int coordinateY)
 {
-    if (grid[coordinateX][coordinateY] == 0)
+    if (elementConditionCheckGrid[coordinateX][coordinateY] == 0)
     {
-        grid[coordinateX][coordinateY] = -1;
+        elementConditionCheckGrid[coordinateX][coordinateY] = -1;
     }
-    else if (grid[coordinateX][coordinateY] == 1)
+    else if (elementConditionCheckGrid[coordinateX][coordinateY] == 1)
     {
         cout << "You have already revealed this position";
     }
@@ -150,9 +153,9 @@ void Mark(int grid[][GRID_BORDERSIZE],int coordinateX,int coordinateY)
 void DisplayMessages()
 {
     cout << "Reveal a postion by typing: [coordinate1] [coordinate2] r" << endl;
-    cout << "Mark a bomb by typing:[coordinate1] [coordinate2] b" << endl; 
+    cout << "Mark a bomb by typing:[coordinate1] [coordinate2] b" << endl;
 }
-bool CheckForDefeat(int xCoordinate,int yCoordinate,int bombCoordinates[10])
+bool CheckForDefeat(int xCoordinate, int yCoordinate, int bombCoordinates[10])
 {
     for (int i = 0;i <= 8;i++)
     {
@@ -191,15 +194,15 @@ bool CheckForWin(int elementsCondition[][GRID_BORDERSIZE], int bombCoordinates[1
     return true;
 }
 int main()
-{  
+{
     while (true)
     {
         int grid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
         int elementConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
-        int bombCoordinates[10] = {};
-        for (int i = 0;i <=GRID_BORDERSIZE;i++)
+        int bombCoordinates[10];
+        for (int i = 0;i < GRID_BORDERSIZE;i++)
         {
-            for (int j = 0;j <= GRID_BORDERSIZE;j++)
+            for (int j = 0;j < GRID_BORDERSIZE;j++)
             {
                 elementConditionCheckGrid[i][j] = 0;
             }
@@ -207,8 +210,7 @@ int main()
         DisplayMessages();
         int firstCoordinate, secondCoordinate;char action;
         cin >> firstCoordinate >> secondCoordinate >> action;
-        GenerateGrid(grid,bombCoordinates, firstCoordinate, secondCoordinate,elementConditionCheckGrid);
-        //RevealNearZero(elementConditionCheckGrid, grid, firstCoordinate, secondCoordinate);
+        GenerateGrid(grid, bombCoordinates, firstCoordinate, secondCoordinate, elementConditionCheckGrid);
         for (int i = 0;i < 9;i++)
         {
             for (int j = 0;j < 9;j++)
@@ -217,17 +219,17 @@ int main()
             }
             cout << endl;
         }
-        DisplayGrid(grid,elementConditionCheckGrid);
+        DisplayGrid(grid, elementConditionCheckGrid);
         cout << endl;
-        
+
         while (true)
-        {  
+        {
             DisplayMessages();
             cin >> firstCoordinate >> secondCoordinate >> action;
             if (action == 'r')
             {
-                
-                if (CheckForDefeat(firstCoordinate,secondCoordinate, bombCoordinates) == true)
+
+                if (CheckForDefeat(firstCoordinate, secondCoordinate, bombCoordinates) == true)
                 {
                     cout << "You lost!!!" << endl;;
                     cout << "If you want to play a new game type: n" << endl;
@@ -248,7 +250,7 @@ int main()
             }
             if (action == 'b')
             {
-                Mark(grid, firstCoordinate, secondCoordinate);
+                Mark(elementConditionCheckGrid, firstCoordinate, secondCoordinate);
             }
             DisplayGrid(grid, elementConditionCheckGrid);
         }
