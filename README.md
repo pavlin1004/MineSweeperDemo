@@ -1,2 +1,2 @@
 # MineSweeperDemo
-FMI project
+
