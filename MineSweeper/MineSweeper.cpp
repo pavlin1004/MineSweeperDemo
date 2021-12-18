@@ -23,6 +23,26 @@ void RevealNearZero(int elementscondition[][GRID_BORDERSIZE], int grid[][GRID_BO
                 }
             }
         }
+    } 
+    else
+    {
+        for (int i = xCoordinate - 1;i <= xCoordinate + 1;i++)
+        {
+            for (int j = yCoordinate - 1;j <= yCoordinate + 1;j++)
+            {
+                if (i >= 0 && j >= 0 && i < GRID_BORDERSIZE && j < GRID_BORDERSIZE)
+                {
+                    if (elementscondition[i][j] == 0)
+                    {
+                        if (grid[i][j] == 0)
+                        {
+                            elementscondition[i][j] = 1;
+                            RevealNearZero(elementscondition, grid, i, j);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
@@ -196,9 +216,9 @@ void DisplayMessages()
 }
 bool CheckForDefeat(int xCoordinate, int yCoordinate, int bombCoordinates[10])
 {
-    for (int i = 0;i <= 8;i++)
+    for (int i = 0;i < GRID_BORDERSIZE;i++)
     {
-        for (int j = 0;j <= 8;j++)
+        for (int j = 0;j <GRID_BORDERSIZE;j++)
         {
             if (bombCoordinates[i] / 10 == xCoordinate && bombCoordinates[i] % 10 == yCoordinate)
             {
@@ -270,8 +290,9 @@ int main()
         while (true)
         {
             DisplayMessages();
+            cout << "--->";
             cin >> firstCoordinate >> secondCoordinate >> action;
-            if (firstCoordinate < 1 || firstCoordinate>9 || secondCoordinate < 1 || secondCoordinate>9)
+            if (firstCoordinate < 1 || firstCoordinate>=GRID_BORDERSIZE || secondCoordinate < 1 || secondCoordinate>=GRID_BORDERSIZE)
             {
                 cout << "Coordinates should be between 1 and 9" << endl;
             }
@@ -306,8 +327,9 @@ int main()
             while (true)
             {
                 DisplayMessages();
+                cout << "--->";
                 cin >> firstCoordinate >> secondCoordinate >> action;
-                if (firstCoordinate < 1 || firstCoordinate>9 || secondCoordinate < 1 || secondCoordinate>9)
+                if (firstCoordinate > 1 || firstCoordinate<=GRID_BORDERSIZE || secondCoordinate > 1 || secondCoordinate<=GRID_BORDERSIZE)
                 {
                     if (action == 'r')
                     {
