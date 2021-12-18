@@ -13,7 +13,7 @@ void RevealNearZero(int elementscondition[][GRID_BORDERSIZE], int grid[][GRID_BO
         {
             for (int j = yCoordinate-1;j <= yCoordinate + 1;j++)
             {
-                if (i >= 0 && j >= 0 && i <= 8 && j <= 8)
+                if (i >= 0 && j >= 0 && i < GRID_BORDERSIZE && j < GRID_BORDERSIZE)
                 {
                     if (elementscondition[i][j] == 0)
                     {
@@ -35,7 +35,7 @@ int NearbyBombCount(int grid[][GRID_BORDERSIZE], int coordinateX, int coordinate
         {
             for (int j = coordinateY - 1;j <= coordinateY + 1;j++)
             {
-                if (i >= 0 && j >= 0 && i <= 8 && j <= 8)
+                if (i >= 0 && j >= 0 && i < GRID_BORDERSIZE && j < GRID_BORDERSIZE)
                 {
                     if (i == coordinateX && j == coordinateY) continue;
                     else
@@ -50,7 +50,7 @@ int NearbyBombCount(int grid[][GRID_BORDERSIZE], int coordinateX, int coordinate
         }
     }
     return elementValue;
-}//Working
+}
 void GenerateBombs(int bombCoordinates[10], int grid[][GRID_BORDERSIZE], int firstXCoordinate, int firstYcoordinate)
 {
     int currentXCoordinate, currentYCoordinate;
@@ -66,7 +66,7 @@ void GenerateBombs(int bombCoordinates[10], int grid[][GRID_BORDERSIZE], int fir
             {
                 for (int y = firstYcoordinate - 1;y <= firstYcoordinate + 1;y++)
                 {
-                    if (x >= 0 && y >= 0 && x <= 8 && y <= 8)
+                    if (x >= 0 && y >= 0 && x < GRID_BORDERSIZE && y < GRID_BORDERSIZE)
                     {
                         if (currentXCoordinate == x && currentYCoordinate == y)
                         {
@@ -153,6 +153,7 @@ void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsCondition[][GRID_BORDE
             }
             else if (grid[i][j] == 0)
             {
+
                 cout <<"    ";
             }
             else
@@ -184,9 +185,9 @@ void Mark(int elementConditionCheckGrid[][GRID_BORDERSIZE], int coordinateX, int
     }
     else if (elementConditionCheckGrid[coordinateX][coordinateY] == 1)
     {
-        cout << "You have already revealed this position";
+        cout << "You have already revealed this position" << endl;
     }
-    else cout << "You have already marked this element";
+    else cout << "You have already marked this element"<<endl;
 }
 void DisplayMessages()
 {
@@ -306,33 +307,46 @@ int main()
             {
                 DisplayMessages();
                 cin >> firstCoordinate >> secondCoordinate >> action;
-                if (action == 'r')
+                if (firstCoordinate < 1 || firstCoordinate>9 || secondCoordinate < 1 || secondCoordinate>9)
                 {
-
-                    if (CheckForDefeat(firstCoordinate - 1, secondCoordinate - 1, bombCoordinates) == true)
+                    if (action == 'r')
                     {
-                        cout << "You lost!!!" << endl;;
-                        cout << "If you want to play a new game type: n" << endl;
-                        cout << "If you want to stop playing type anything else" << endl;
-                        break;
+
+                        if (CheckForDefeat(firstCoordinate - 1, secondCoordinate - 1, bombCoordinates) == true)
+                        {
+                            cout << "You lost!!!" << endl;;
+                            cout << "If you want to play a new game type: n" << endl;
+                            cout << "If you want to stop playing type anything else" << endl;
+                            break;
+                        }
+                        else
+                        {
+                            Reveal(grid, firstCoordinate - 1, secondCoordinate - 1, bombCoordinates, elementConditionCheckGrid);
+                        }
+                        if (CheckForWin(elementConditionCheckGrid, bombCoordinates) == true)
+                        {
+                            cout << "You won!!!" << endl;;
+                            cout << "If you want to play a new game type: n !" << endl;
+                            cout << "If you want to stop playing type anything else" << endl;
+                            break;
+                        }
+                        DisplayGrid(grid, elementConditionCheckGrid);
+                    }
+                    else if (action == 'b')
+                    {
+                        Mark(elementConditionCheckGrid, firstCoordinate - 1, secondCoordinate - 1);
+                        DisplayGrid(grid, elementConditionCheckGrid);
                     }
                     else
                     {
-                        Reveal(grid, firstCoordinate - 1, secondCoordinate - 1, bombCoordinates, elementConditionCheckGrid);
-                    }
-                    if (CheckForWin(elementConditionCheckGrid, (int*)bombCoordinates) == true)
-                    {
-                        cout << "You won!!!" << endl;;
-                        cout << "If you want to play a new game type: n !" << endl;
-                        cout << "If you want to stop playing type anything else" << endl;
-                        break;
+                        cout<<"Action should be 'r' for revealing a position OR 'b' for marking a bomb" << endl;
                     }
                 }
-                if (action == 'b')
+                else
                 {
-                    Mark(elementConditionCheckGrid, firstCoordinate - 1, secondCoordinate - 1);
+                    cout << "Coordinates should be between 1 and 9" << endl;
                 }
-                DisplayGrid(grid, elementConditionCheckGrid);
+                
             }
         char playOrNot;
         cin >> playOrNot;
