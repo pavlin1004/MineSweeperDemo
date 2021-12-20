@@ -8,8 +8,8 @@ const int BOMBS_COUNT = 10;
 const int GRID_BORDERSIZE = 9;
 HANDLE hConsole;
 /// <summary>
-/// When currently revealed element has value zero all elements around it are also revealed
-/// If some of the revealed elements have value zero all elemnts around it are revealed too
+/// When currently revealed element has value 0 all elements around it are also being revealed
+/// If some of the revealed elements have value 0 all elemnts around it are revealed too
 /// </summary>
 /// <param name="elementsConditionCheckGrid">
 /// Element has value: 0 if not revealed
@@ -172,8 +172,7 @@ void GenerateGrid(int grid[][GRID_BORDERSIZE], int bombCoordinates[BOMBS_COUNT],
 /// When game ends ---> gameover = true ---> All bombs are displayed in red --->All marked incorrectly marked elements are displayed in blue  
 /// </param>
 void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsConditionCheckGrid[][GRID_BORDERSIZE], bool gameOver = false)
-{
-    
+{  
     cout << "     1   2   3   4   5   6   7   8   9" << endl;
     cout << "  _____________________________________" << endl;
     for (int i = 0;i < 9;i++)
@@ -189,14 +188,12 @@ void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsConditionCheckGrid[][G
             }
             else 
             {
-
                 if (elementsConditionCheckGrid[i][j] == 0)
                 {
                     cout << "X   ";
                 }
                 else if (elementsConditionCheckGrid[i][j] == -1)
                 {
-                    char bomb = 'B';
                     if (gameOver == true)
                     {
                         SetConsoleTextAttribute(hConsole, 9);
@@ -205,7 +202,6 @@ void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsConditionCheckGrid[][G
                 }
                 else if (grid[i][j] == 0)
                 {
-
                     cout << "    ";
                 }
                 else
@@ -239,7 +235,6 @@ void Reveal(int grid[][GRID_BORDERSIZE], int coordinateX, int coordinateY, int b
     {
         cout << "You have already revealed this position" << endl;
     }
-
 }
 /// <summary>
 /// Marked an element as a bomb
@@ -326,15 +321,15 @@ int main()
     cout << "                 _______________________________________________________________________" << endl;
     //Game
     while (true)
-    {      
+    {
         //Grid to generate
         int grid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
-        //Has value 1 if element is revealed
-        //Has value 0 if element is covered
+        //Has value  1 if element is revealed
+        //Has value  0 if element is covered
         //Has value -1 if element is marked as bomb
-        int elementsConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {0};
+        int elementsConditionCheckGrid[GRID_BORDERSIZE][GRID_BORDERSIZE] = { 0 };
         //Array of 10 randomly generated bomb coordinates
-        int bombCoordinates[10];     
+        int bombCoordinates[10];
         //Displays grid with all elements(ungenerated) covered
         DisplayGrid(grid, elementsConditionCheckGrid, false);
         //Decalring variebles
@@ -368,7 +363,6 @@ int main()
                 cout << "Coordinates should be between 1 and 9" << endl;
             }
         }
-      
         //If coordinates are correct and action is revealing position the progrmam generates a 9x9 grid
         GenerateGrid(grid, bombCoordinates, firstCoordinate - 1, secondCoordinate - 1, elementsConditionCheckGrid);
         //Displays generated grid with currently revealed elements
@@ -381,57 +375,54 @@ int main()
             cout << "--->";
             cin >> firstCoordinate >> secondCoordinate >> action;
             //Checks for correct coordinates           
-                if (firstCoordinate > 0 || firstCoordinate <= GRID_BORDERSIZE || secondCoordinate > 0 || secondCoordinate <= GRID_BORDERSIZE)
+            if (firstCoordinate > 0 || firstCoordinate <= GRID_BORDERSIZE || secondCoordinate > 0 || secondCoordinate <= GRID_BORDERSIZE)
+            {
+                if (action == 'r')
                 {
-                    if (action == 'r')
+                    //If you try to reveal bomb you lose 
+                    //Game ends
+                    if (CheckForDefeat(firstCoordinate - 1, secondCoordinate - 1, bombCoordinates) == true)
                     {
-                        //If you try to reveal bomb you lose 
-                        //Game ends
-                        if (CheckForDefeat(firstCoordinate - 1, secondCoordinate - 1, bombCoordinates) == true)
-                        {
-                            cout << "-----------------------------------------------------------" << endl;
-                            cout << "You lost!!!" << endl;;
-                            DisplayGrid(grid, elementsConditionCheckGrid, true);
-                            cout << "If you want to play a new game type: n" << endl;
-                            cout << "If you want to stop playing type anything else" << endl;
-                            break;
-
-                        }
-                        //If the element is not a bomb it gets revealed
-                        else
-                        {
-                            Reveal(grid, firstCoordinate - 1, secondCoordinate - 1, bombCoordinates, elementsConditionCheckGrid);
-                        }
-                        //Show the grid with revealed elements
-                    }
-                    else if (action == 'b')
-                    {
-                        //Marks an element
-                        Mark(elementsConditionCheckGrid, firstCoordinate - 1, secondCoordinate - 1);
+                        cout << "-----------------------------------------------------------" << endl;
+                        cout << "You lost!!!" << endl;;
+                        DisplayGrid(grid, elementsConditionCheckGrid, true);
+                        cout << "If you want to play a new game type: n" << endl;
+                        cout << "If you want to stop playing type anything else" << endl;
+                        break;
 
                     }
-                    //Incorrect action input
+                    //If the element is not a bomb it gets revealed
                     else
                     {
-                        cout << "Action should be 'r' for revealing a position OR 'b' for marking a bomb" << endl;
+                        Reveal(grid, firstCoordinate - 1, secondCoordinate - 1, bombCoordinates, elementsConditionCheckGrid);
                     }
-                    DisplayGrid(grid, elementsConditionCheckGrid);
+                    //Show the grid with revealed elements
                 }
-                //Incorrect coordinates input
+                else if (action == 'b')
+                {
+                    //Marks an element
+                    Mark(elementsConditionCheckGrid, firstCoordinate - 1, secondCoordinate - 1);
+                }
+                //Incorrect action input
                 else
                 {
-                    cout << "Coordinates should be between 1 and 9" << endl;
+                    cout << "Action should be 'r' for revealing a position OR 'b' for marking a bomb" << endl;
                 }
-                if (CheckForWin(grid, elementsConditionCheckGrid, bombCoordinates) == true)
-                {
-                    cout << "You won!!!" << endl;;
-                    cout << "If you want to play a new game type: n !" << endl;
-                    cout << "If you want to stop playing type anything else" << endl;
-                    break;
-                }
+                DisplayGrid(grid, elementsConditionCheckGrid);
             }
-        
-
+            //Incorrect coordinates input
+            else
+            {
+                cout << "Coordinates should be between 1 and 9" << endl;
+            }
+            if (CheckForWin(grid, elementsConditionCheckGrid, bombCoordinates) == true)
+            {
+                cout << "You won!!!" << endl;;
+                cout << "If you want to play a new game type: n !" << endl;
+                cout << "If you want to stop playing type anything else" << endl;
+                break;
+            }
+        }
         char playOrNot;
         cout << "--->";
         cin >> playOrNot;
