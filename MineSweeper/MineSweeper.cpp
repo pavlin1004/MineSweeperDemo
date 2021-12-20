@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
-#include <random>
+#include <stdio.h>
 #include <ctime>
 #include <stdio.h>
 #include <windows.h>
@@ -139,7 +139,7 @@ void DisplayGrid(int grid[][GRID_BORDERSIZE], int elementsConditionCheckGrid[][G
 {
     
     cout << "     1   2   3   4   5   6   7   8   9" << endl;
-    cout << " _____________________________________" << endl;
+    cout << "  _____________________________________" << endl;
     for (int i = 0;i < 9;i++)
     {
         cout << i + 1 << "|   ";
@@ -259,7 +259,7 @@ int main()
     cout << "                 _______________________________________________________________________" << endl;
     //Game
     while (true)
-    {
+    {      
         //Grid to generate
         int grid[GRID_BORDERSIZE][GRID_BORDERSIZE] = {};
         //Has value 1 if element is revealed
@@ -277,7 +277,7 @@ int main()
             }
         }
         //Displays grid with all elements(ungenerated) covered
-        DisplayUngeneratedGrid(elementsConditionCheckGrid);
+        DisplayGrid(grid, elementsConditionCheckGrid, false, false);
         //Decalring variebles
         int firstCoordinate, secondCoordinate;
         char action;
