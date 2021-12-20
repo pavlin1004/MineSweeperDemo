@@ -229,28 +229,20 @@ bool CheckForDefeat(int xCoordinate, int yCoordinate, int bombCoordinates[BOMBS_
     }
     return false;
 }
-bool CheckForWin(int elementsConditionCheckGrid[][GRID_BORDERSIZE], int bombCoordinates[BOMBS_COUNT])
-{
-    
+bool CheckForWin(int grid[][GRID_BORDERSIZE],int elementsConditionCheckGrid[][GRID_BORDERSIZE], int bombCoordinates[BOMBS_COUNT])
+{  
     for (int i = 0;i < GRID_BORDERSIZE;i++)
     {
         for (int j = 0;j < GRID_BORDERSIZE;j++)
         {
-            for (int k = 0;k < BOMBS_COUNT;k++)
-            {
-                if (bombCoordinates[k] / 10 == i && bombCoordinates[k] % 10 == j)
-                {
-                    if (elementsConditionCheckGrid[i][j] != -1)
-                    {
-                        return false;
-                    }
-                }
-            }
-            if (elementsConditionCheckGrid[i][j] != 1)
+            if (grid[i][j]==-1&&elementsConditionCheckGrid[i][j] != -1)
             {
                 return false;
             }
-
+            else if (elementsConditionCheckGrid[i][j] == 0)
+            {
+                return false;
+            }
         }
     }
     return true;
@@ -369,7 +361,7 @@ int main()
             {
                 cout << "Coordinates should be between 1 and 9" << endl;
             }
-            if (CheckForWin(elementsConditionCheckGrid, bombCoordinates) == true)
+            if (CheckForWin(grid,elementsConditionCheckGrid, bombCoordinates) == true)
             {
                 cout << "You won!!!" << endl;;
                 cout << "If you want to play a new game type: n !" << endl;
